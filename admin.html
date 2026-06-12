@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Editor — Gavin Studio Project</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --orange: #E86020;
+    --orange-light: #FF7A35;
+    --dark: #0F0F0F;
+    --surface: #161616;
+    --elevated: #1E1E1E;
+    --floating: #252525;
+    --border: rgba(255,255,255,0.08);
+    --border-focus: rgba(232,96,32,0.6);
+    --text: #E8E4DE;
+    --muted: #6A6460;
+    --success: #2D9E5A;
+    --success-bg: rgba(45,158,90,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+  }
+
+  .sidebar-brand {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-brand .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+    display: block;
+  }
+  .sidebar-brand .logo span { color: var(--orange); }
+  .sidebar-brand .tag {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+
+  .sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .sidebar-nav a:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.03);
+  }
+  .sidebar-nav a.active {
+    color: var(--orange-light);
+    border-left-color: var(--orange);
+    background: rgba(232,96,32,0.06);
+  }
+  .sidebar-nav .nav-icon {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    width: 14px;
+    text-align: center;
+  }
+
+  .sidebar-actions {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* ── Main ── */
+  .main {
+    margin-left: 220px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    background: rgba(15,15,15,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topbar h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .topbar .section-crumb {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-left: 12px;
+  }
+  .topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    text-decoration: none;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn:active { transform: scale(0.98); }
+  .btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+  .btn-primary {
+    background: var(--orange);
+    color: #fff;
+  }
+  .btn-secondary {
+    background: var(--elevated);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-danger {
+    background: transparent;
+    color: #E05555;
+    border: 1px solid rgba(224,85,85,0.3);
+  }
+  .btn-danger:hover { background: rgba(224,85,85,0.08); }
+  .btn-sm { padding: 6px 12px; font-size: 0.72rem; }
+  .btn-full { width: 100%; justify-content: center; }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--success-bg);
+    border: 1px solid var(--success);
+    color: #5FD08A;
+    font-size: 0.82rem;
+    font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  #toast.error {
+    background: rgba(224,85,85,0.1);
+    border-color: #E05555;
+    color: #F08080;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Content area ── */
+  .content {
+    padding: 40px;
+    max-width: 900px;
+  }
+
+  /* ── Section blocks ── */
+  .edit-section {
+    margin-bottom: 56px;
+    scroll-margin-top: 80px;
+  }
+  .edit-section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .edit-section-header .section-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(232,96,32,0.12);
+    border: 1px solid rgba(232,96,32,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: var(--orange);
+    flex-shrink: 0;
+  }
+  .edit-section-header h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .edit-section-header p {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── Field groups ── */
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .field-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .field label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field label .field-key {
+    font-weight: 400;
+    color: rgba(138,132,128,0.5);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+  }
+
+  input[type="text"],
+  textarea {
+    background: var(--elevated);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    padding: 10px 14px;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    resize: vertical;
+  }
+  input[type="text"]:focus,
+  textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(232,96,32,0.1);
+  }
+  textarea { min-height: 80px; line-height: 1.6; }
+  textarea.short { min-height: 60px; }
+  textarea.tall  { min-height: 120px; }
+
+  .field-hint {
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── Stats grid ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 4px;
+  }
+  .stat-pair {
+    background: var(--elevated);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ── Timeline steps ── */
+  .timeline-step-block {
+    background: var(--elevated);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .timeline-step-block::before {
+    content: attr(data-step);
+    position: absolute;
+    top: 20px; right: 20px;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--orange);
+    font-weight: 600;
+  }
+
+  /* ── Showcase items ── */
+  .showcase-item-block {
+    background: var(--elevated);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin-bottom: 8px;
+  }
+  .showcase-item-block .item-num {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--orange);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  /* ── Preview strip ── */
+  .preview-strip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--orange);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .preview-strip p {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .preview-strip p strong { color: var(--text); }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 40px 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <span class="logo">Gavin<span>.</span></span>
+    <span class="tag">Site Editor</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#hero" class="active"><span class="nav-icon">◈</span> Hero</a>
+    <a href="#about"><span class="nav-icon">◎</span> About</a>
+    <a href="#project"><span class="nav-icon">◧</span> The Project</a>
+    <a href="#journey"><span class="nav-icon">◷</span> Journey</a>
+    <a href="#showcase"><span class="nav-icon">◫</span> Showcase</a>
+    <a href="#footer"><span class="nav-icon">◻</span> Footer</a>
+  </nav>
+  <div class="sidebar-actions">
+    <button class="btn btn-primary btn-full" onclick="saveAll()">💾 Save All Changes</button>
+    <a href="index.html" target="_blank" class="btn btn-secondary btn-full">↗ View Site</a>
+    <button class="btn btn-danger btn-full btn-sm" onclick="confirmReset()">↺ Reset to Defaults</button>
+  </div>
+</aside>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <h1>Website Copy Editor</h1>
+      <span class="section-crumb" id="active-section-label">— Hero</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="saveAll()">Save</button>
+      <a href="index.html" target="_blank" class="btn btn-primary btn-sm">View Site ↗</a>
+    </div>
+  </div>
+
+  <!-- Editor Content -->
+  <div class="content">
+
+    <div class="preview-strip">
+      <p><strong>How it works:</strong> Edit any field below, then click <strong>Save All Changes</strong>. Open the site at <strong>localhost:3000</strong> to see your updates live.</p>
+      <a href="index.html" target="_blank" class="btn btn-primary btn-sm">Open Site ↗</a>
+    </div>
+
+    <!-- ── HERO ── -->
+    <div class="edit-section" id="hero">
+      <div class="edit-section-header">
+        <div class="section-icon">◈</div>
+        <div>
+          <h2>Hero Section</h2>
+          <p>The first thing visitors see — the full-screen header with the city model background</p>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field">
+          <label>Badge / Tag</label>
+          <input type="text" data-key="hero-tag">
+        </div>
+        <div class="field-row-3">
+          <div class="field">
+            <label>Headline — Line 1</label>
+            <input type="text" data-key="hero-line1">
+          </div>
+          <div class="field">
+            <label>Headline — Line 2 <em style="color:var(--orange);font-style:normal;">(italic)</em></label>
+            <input type="text" data-key="hero-line2">
+          </div>
+          <div class="field">
+            <label>Headline — Line 3</label>
+            <input type="text" data-key="hero-line3">
+          </div>
+        </div>
+        <div class="field">
+          <label>Subheading</label>
+          <textarea class="short" data-key="hero-sub"></textarea>
+        </div>
+        <div class="field-row-3">
+          <div class="field">
+            <label>Student Name</label>
+            <input type="text" data-key="hero-student">
+          </div>
+          <div class="field">
+            <label>Medium</label>
+            <input type="text" data-key="hero-medium">
+          </div>
+          <div class="field">
+            <label>Discipline</label>
+            <input type="text" data-key="hero-discipline">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── ABOUT ── -->
+    <div class="edit-section" id="about">
+      <div class="edit-section-header">
+        <div class="section-icon">◎</div>
+        <div>
+          <h2>About Section</h2>
+          <p>Gavin's background, building history, and stats panel</p>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-row">
+          <div class="field">
+            <label>Headline — Line 1</label>
+            <input type="text" data-key="about-headline-1">
+          </div>
+          <div class="field">
+            <label>Headline — Line 2 <em style="color:var(--orange);font-style:normal;">(italic)</em></label>
+            <input type="text" data-key="about-headline-2">
+          </div>
+        </div>
+        <div class="field">
+          <label>Paragraph 1</label>
+          <textarea data-key="about-p1"></textarea>
+        </div>
+        <div class="field">
+          <label>Paragraph 2</label>
+          <textarea data-key="about-p2"></textarea>
+        </div>
+        <div class="field">
+          <label>Paragraph 3</label>
+          <textarea data-key="about-p3"></textarea>
+        </div>
+        <div class="field">
+          <label>Paragraph 4 (closing line)</label>
+          <textarea class="short" data-key="about-p4"></textarea>
+        </div>
+        <div class="field">
+          <label>Stats Panel</label>
+          <div class="stats-grid">
+            <div class="stat-pair">
+              <div class="field"><label>Number</label><input type="text" data-key="stat-1-num"></div>
+              <div class="field"><label>Label</label><input type="text" data-key="stat-1-desc"></div>
+            </div>
+            <div class="stat-pair">
+              <div class="field"><label>Number</label><input type="text" data-key="stat-2-num"></div>
+              <div class="field"><label>Label</label><input type="text" data-key="stat-2-desc"></div>
+            </div>
+            <div class="stat-pair">
+              <div class="field"><label>Number</label><input type="text" data-key="stat-3-num"></div>
+              <div class="field"><label>Label</label><input type="text" data-key="stat-3-desc"></div>
+            </div>
+            <div class="stat-pair">
+              <div class="field"><label>Number</label><input type="text" data-key="stat-4-num"></div>
+              <div class="field"><label>Label</label><input type="text" data-key="stat-4-desc"></div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Photo Caption</label>
+          <input type="text" data-key="about-caption">
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── PROJECT ── -->
+    <div class="edit-section" id="project">
+      <div class="edit-section-header">
+        <div class="section-icon">◧</div>
+        <div>
+          <h2>The Project Section</h2>
+          <p>Project overview, central idea quote, and three goal cards</p>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-row-3">
+          <div class="field">
+            <label>Headline — Line 1</label>
+            <input type="text" data-key="project-headline-1">
+          </div>
+          <div class="field">
+            <label>Headline — Line 2 <em style="color:var(--orange);font-style:normal;">(italic)</em></label>
+            <input type="text" data-key="project-headline-2">
+          </div>
+          <div class="field">
+            <label>Headline — Line 3</label>
+            <input type="text" data-key="project-headline-3">
+          </div>
+        </div>
+        <div class="field">
+          <label>Intro Paragraph</label>
+          <textarea data-key="project-p1"></textarea>
+        </div>
+        <div class="field">
+          <label>Central Idea Quote</label>
+          <textarea class="short" data-key="central-idea"></textarea>
+        </div>
+
+        <!-- The Plan -->
+        <div style="background:var(--elevated);border:1px solid var(--border);padding:20px 24px;">
+          <div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--orange);font-weight:600;margin-bottom:16px;">The Plan (4 Steps)</div>
+          <div class="field-group">
+            <div class="field-row">
+              <div class="field"><label>Plan Heading</label><input type="text" data-key="plan-heading"></div>
+              <div class="field"><label>Plan Subtext</label><input type="text" data-key="plan-sub"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Step 1 — Title</label><input type="text" data-key="plan-1-title"></div>
+              <div class="field"><label>Step 2 — Title</label><input type="text" data-key="plan-2-title"></div>
+            </div>
+            <div class="field"><label>Step 1 — Description</label><textarea class="short" data-key="plan-1-body"></textarea></div>
+            <div class="field"><label>Step 2 — Description</label><textarea class="short" data-key="plan-2-body"></textarea></div>
+            <div class="field-row">
+              <div class="field"><label>Step 3 — Title</label><input type="text" data-key="plan-3-title"></div>
+              <div class="field"><label>Step 4 — Title</label><input type="text" data-key="plan-4-title"></div>
+            </div>
+            <div class="field"><label>Step 3 — Description</label><textarea class="short" data-key="plan-3-body"></textarea></div>
+            <div class="field"><label>Step 4 — Description</label><textarea class="short" data-key="plan-4-body"></textarea></div>
+          </div>
+        </div>
+
+        <div class="field-row-3" style="margin-top:8px;">
+          <div class="field">
+            <label>Goal 1 — Title</label>
+            <input type="text" data-key="goal-1-title">
+          </div>
+          <div class="field">
+            <label>Goal 2 — Title</label>
+            <input type="text" data-key="goal-2-title">
+          </div>
+          <div class="field">
+            <label>Goal 3 — Title</label>
+            <input type="text" data-key="goal-3-title">
+          </div>
+        </div>
+        <div class="field">
+          <label>Goal 1 — Description</label>
+          <textarea class="short" data-key="goal-1-body"></textarea>
+        </div>
+        <div class="field">
+          <label>Goal 2 — Description</label>
+          <textarea class="short" data-key="goal-2-body"></textarea>
+        </div>
+        <div class="field">
+          <label>Goal 3 — Description</label>
+          <textarea class="short" data-key="goal-3-body"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── JOURNEY ── -->
+    <div class="edit-section" id="journey">
+      <div class="edit-section-header">
+        <div class="section-icon">◷</div>
+        <div>
+          <h2>Journey Section (Timeline)</h2>
+          <p>The 5-step horizontal timeline showing Gavin's progression</p>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-row-3">
+          <div class="field">
+            <label>Headline — Word 1</label>
+            <input type="text" data-key="journey-headline-1">
+          </div>
+          <div class="field">
+            <label>Headline — Highlighted word <em style="color:var(--orange);font-style:normal;">(italic)</em></label>
+            <input type="text" data-key="journey-headline-2">
+          </div>
+          <div class="field">
+            <label>Headline — Rest of line</label>
+            <input type="text" data-key="journey-headline-3">
+          </div>
+        </div>
+        <div class="field">
+          <label>Intro Paragraph</label>
+          <textarea class="short" data-key="journey-intro"></textarea>
+        </div>
+        <div class="field">
+          <label>"Choosing the Tools" — Paragraph 1</label>
+          <textarea class="short" data-key="tools-p1"></textarea>
+        </div>
+        <div class="field">
+          <label>"Choosing the Tools" — Paragraph 2</label>
+          <textarea data-key="tools-p2"></textarea>
+        </div>
+
+        <!-- Steps -->
+        <div class="timeline-step-block" data-step="01 — START">
+          <div class="field-group">
+            <div class="field"><label>Step Title</label><input type="text" data-key="s1-title"></div>
+            <div class="field"><label>Paragraph 1</label><textarea data-key="s1-p1"></textarea></div>
+            <div class="field"><label>Paragraph 2</label><textarea data-key="s1-p2"></textarea></div>
+            <div class="field"><label>Paragraph 3</label><textarea data-key="s1-p3"></textarea></div>
+            <div class="field"><label>Pull Quote</label><textarea class="short" data-key="s1-quote"></textarea></div>
+            <div class="field"><label>Image Caption</label><input type="text" data-key="s1-cap1"></div>
+          </div>
+        </div>
+
+        <div class="timeline-step-block" data-step="02 — BLENDER">
+          <div class="field-group">
+            <div class="field"><label>Step Title</label><input type="text" data-key="s2-title"></div>
+            <div class="field"><label>Paragraph 1</label><textarea data-key="s2-p1"></textarea></div>
+            <div class="field"><label>Paragraph 2</label><textarea data-key="s2-p2"></textarea></div>
+            <div class="field"><label>Paragraph 3</label><textarea data-key="s2-p3"></textarea></div>
+            <div class="field-row">
+              <div class="field"><label>Donut Image Caption</label><input type="text" data-key="s2-cap1"></div>
+              <div class="field"><label>Crate Image Caption</label><input type="text" data-key="s2-cap2"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-step-block" data-step="03 — PISA">
+          <div class="field-group">
+            <div class="field"><label>Step Title</label><input type="text" data-key="s3-title"></div>
+            <div class="field"><label>Paragraph 1</label><textarea data-key="s3-p1"></textarea></div>
+            <div class="field"><label>Paragraph 2</label><textarea data-key="s3-p2"></textarea></div>
+            <div class="field-row">
+              <div class="field"><label>Image Caption 1</label><input type="text" data-key="s3-cap1"></div>
+              <div class="field"><label>Image Caption 2</label><input type="text" data-key="s3-cap2"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-step-block" data-step="04 — BANNATYNE">
+          <div class="field-group">
+            <div class="field"><label>Step Title</label><input type="text" data-key="s4-title"></div>
+            <div class="field"><label>Paragraph 1</label><textarea data-key="s4-p1"></textarea></div>
+            <div class="field"><label>Paragraph 2</label><textarea data-key="s4-p2"></textarea></div>
+            <div class="field"><label>Main Image Caption</label><input type="text" data-key="s4-cap1"></div>
+            <div class="field-row">
+              <div class="field"><label>In-Progress Caption</label><input type="text" data-key="s4-cap2"></div>
+              <div class="field"><label>Real Building Caption</label><input type="text" data-key="s4-cap3"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-step-block" data-step="05 — FINAL">
+          <div class="field-group">
+            <div class="field"><label>Step Title</label><input type="text" data-key="s5-title"></div>
+            <div class="field"><label>Paragraph 1</label><textarea data-key="s5-p1"></textarea></div>
+            <div class="field"><label>Paragraph 2</label><textarea data-key="s5-p2"></textarea></div>
+            <div class="field"><label>Callout Heading</label><input type="text" data-key="arch-heading"></div>
+            <div class="field"><label>Callout Body</label><textarea class="short" data-key="arch-body"></textarea></div>
+            <div class="field-row-3">
+              <div class="field"><label>Constraint 1</label><input type="text" data-key="con-1"></div>
+              <div class="field"><label>Constraint 2</label><input type="text" data-key="con-2"></div>
+              <div class="field"><label>Constraint 3</label><input type="text" data-key="con-3"></div>
+            </div>
+            <div class="field-row-3">
+              <div class="field"><label>Constraint 4</label><input type="text" data-key="con-4"></div>
+              <div class="field"><label>Constraint 5</label><input type="text" data-key="con-5"></div>
+              <div class="field"><label>Constraint 6</label><input type="text" data-key="con-6"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Topo Map Caption</label><input type="text" data-key="s5-cap1"></div>
+              <div class="field"><label>City Model Caption</label><input type="text" data-key="s5-cap2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── SHOWCASE ── -->
+    <div class="edit-section" id="showcase">
+      <div class="edit-section-header">
+        <div class="section-icon">◫</div>
+        <div>
+          <h2>Showcase Section</h2>
+          <p>Photo grid tags, titles, captions, and the capstone feature card</p>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-row">
+          <div class="field">
+            <label>Headline — Line 1</label>
+            <input type="text" data-key="showcase-headline">
+          </div>
+          <div class="field">
+            <label>Headline — Line 2 <em style="color:var(--orange);font-style:normal;">(italic)</em></label>
+            <input type="text" data-key="showcase-headline2">
+          </div>
+        </div>
+        <div class="field">
+          <label>Intro Text</label>
+          <textarea class="short" data-key="showcase-intro"></textarea>
+        </div>
+
+        <!-- 6 showcase items -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+          <div class="showcase-item-block">
+            <div class="item-num">Item 1 — 3D City Model (Large)</div>
+            <div class="field-group">
+              <div class="field"><label>Tag</label><input type="text" data-key="item-1-tag"></div>
+              <div class="field"><label>Title</label><input type="text" data-key="item-1-title"></div>
+              <div class="field"><label>Caption</label><textarea class="short" data-key="item-1-caption"></textarea></div>
+            </div>
+          </div>
+          <div class="showcase-item-block">
+            <div class="item-num">Item 2 — 123 Bannatyne 3D Model</div>
+            <div class="field-group">
+              <div class="field"><label>Tag</label><input type="text" data-key="item-2-tag"></div>
+              <div class="field"><label>Title</label><input type="text" data-key="item-2-title"></div>
+              <div class="field"><label>Caption</label><textarea class="short" data-key="item-2-caption"></textarea></div>
+            </div>
+          </div>
+          <div class="showcase-item-block">
+            <div class="item-num">Item 3 — Real Building Photo</div>
+            <div class="field-group">
+              <div class="field"><label>Tag</label><input type="text" data-key="item-3-tag"></div>
+              <div class="field"><label>Title</label><input type="text" data-key="item-3-title"></div>
+              <div class="field"><label>Caption</label><textarea class="short" data-key="item-3-caption"></textarea></div>
+            </div>
+          </div>
+          <div class="showcase-item-block">
+            <div class="item-num">Item 4 — Tower of Pisa (base)</div>
+            <div class="field-group">
+              <div class="field"><label>Tag</label><input type="text" data-key="item-4-tag"></div>
+              <div class="field"><label>Title</label><input type="text" data-key="item-4-title"></div>
+              <div class="field"><label>Caption</label><textarea class="short" data-key="item-4-caption"></textarea></div>
+            </div>
+          </div>
+          <div class="showcase-item-block">
+            <div class="item-num">Item 5 — Tower of Pisa (top)</div>
+            <div class="field-group">
+              <div class="field"><label>Tag</label><input type="text" data-key="item-5-tag"></div>
+              <div class="field"><label>Title</label><input type="text" data-key="item-5-title"></div>
+              <div class="field"><label>Caption</label><textarea class="short" data-key="item-5-caption"></textarea></div>
+            </div>
+          </div>
+          <div class="showcase-item-block">
+            <div class="item-num">Item 6 — Site Topo Map</div>
+            <div class="field-group">
+              <div class="field"><label>Tag</label><input type="text" data-key="item-6-tag"></div>
+              <div class="field"><label>Title</label><input type="text" data-key="item-6-title"></div>
+              <div class="field"><label>Caption</label><textarea class="short" data-key="item-6-caption"></textarea></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Capstone -->
+        <div style="background:var(--elevated);border:1px solid rgba(232,96,32,0.2);padding:24px;margin-top:8px;">
+          <div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--orange);font-weight:600;margin-bottom:16px;">Capstone Feature Card</div>
+          <div class="field-group">
+            <div class="field-row">
+              <div class="field"><label>Tag</label><input type="text" data-key="capstone-tag"></div>
+              <div class="field"><label>Title</label><input type="text" data-key="capstone-title"></div>
+            </div>
+            <div class="field"><label>Paragraph 1</label><textarea data-key="capstone-p1"></textarea></div>
+            <div class="field"><label>Paragraph 2</label><textarea class="short" data-key="capstone-p2"></textarea></div>
+            <div class="field-row">
+              <div class="field"><label>List Item 1</label><input type="text" data-key="capstone-li1"></div>
+              <div class="field"><label>List Item 2</label><input type="text" data-key="capstone-li2"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>List Item 3</label><input type="text" data-key="capstone-li3"></div>
+              <div class="field"><label>List Item 4</label><input type="text" data-key="capstone-li4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── FOOTER ── -->
+    <div class="edit-section" id="footer">
+      <div class="edit-section-header">
+        <div class="section-icon">◻</div>
+        <div>
+          <h2>Footer</h2>
+          <p>The three text elements at the bottom of the page</p>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-row-3">
+          <div class="field">
+            <label>Centre Text</label>
+            <input type="text" data-key="footer-centre">
+          </div>
+          <div class="field">
+            <label>Name (right)</label>
+            <input type="text" data-key="footer-name">
+          </div>
+          <div class="field">
+            <label>Subtitle (right)</label>
+            <input type="text" data-key="footer-sub">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom save bar -->
+    <div style="background:var(--surface);border:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:60px;">
+      <p style="font-size:0.8rem;color:var(--muted);">Changes are saved to your browser and applied to the site automatically.</p>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost" onclick="confirmReset()">↺ Reset to Defaults</button>
+        <a href="index.html" target="_blank" class="btn btn-secondary">View Site ↗</a>
+        <button class="btn btn-primary" onclick="saveAll()">💾 Save All Changes</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="content.js"></script>
+<script>
+  // ── Populate all fields from saved content ──────────────────────────────────
+  function populateFields() {
+    const c = getContent();
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const key = el.getAttribute('data-key');
+      if (key in c) el.value = c[key];
+    });
+  }
+
+  // ── Collect all field values ────────────────────────────────────────────────
+  function collectFields() {
+    const data = {};
+    document.querySelectorAll('[data-key]').forEach(el => {
+      data[el.getAttribute('data-key')] = el.value;
+    });
+    return data;
+  }
+
+  // ── Save ────────────────────────────────────────────────────────────────────
+  function saveAll() {
+    const data = collectFields();
+    saveContent(data);
+    showToast('✓ All changes saved! Refresh the site to see updates.', false);
+  }
+
+  // ── Reset ───────────────────────────────────────────────────────────────────
+  function confirmReset() {
+    if (confirm('Reset all content to the original defaults? This cannot be undone.')) {
+      resetContent();
+      populateFields();
+      showToast('↺ Content reset to defaults.', false);
+    }
+  }
+
+  // ── Toast ───────────────────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = isError ? 'error' : '';
+    t.style.display = 'flex';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3500);
+  }
+
+  // ── Sidebar active link on scroll ──────────────────────────────────────────
+  const sectionIds = ['hero','about','project','journey','showcase','footer'];
+  const sideLinks = {};
+  sectionIds.forEach(id => {
+    sideLinks[id] = document.querySelector(`.sidebar-nav a[href="#${id}"]`);
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        Object.values(sideLinks).forEach(l => l && l.classList.remove('active'));
+        if (sideLinks[id]) sideLinks[id].classList.add('active');
+        const label = document.getElementById('active-section-label');
+        if (label && sideLinks[id]) label.textContent = '— ' + sideLinks[id].textContent.trim();
+      }
+    });
+  }, { rootMargin: '-20% 0px -60% 0px' });
+
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+
+  // ── Keyboard shortcut: Ctrl+S / Cmd+S ──────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      saveAll();
+    }
+  });
+
+  // ── Init ────────────────────────────────────────────────────────────────────
+  populateFields();
+</script>
+</body>
+</html>

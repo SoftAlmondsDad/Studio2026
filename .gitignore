@@ -1,0 +1,18 @@
+node_modules/
+.claude/
+.agents/
+.impeccable/
+Studio2026/
+BuildFiles/
+temporary screenshots/
+index-old.html
+PRODUCT.md
+*.mov
+*.avi
+*.heic
+*.HEIC
+*.stl
+*.fbx
+*.pdf
+*.docx
+*.mp4.bak
