@@ -1,0 +1,17 @@
+{
+ "railing_zone_thickness": {
+  "samples": 223,
+  "min_mm": 0.829,
+  "median_mm": 1.324
+ },
+ "empty_layer_bands": [],
+ "islands": 1,
+ "non_manifold_edges": 0,
+ "volume_cm3": 89.86,
+ "size_mm": [
+  60.51,
+  60.51,
+  112.91
+ ],
+ "base_z": 0.0
+}

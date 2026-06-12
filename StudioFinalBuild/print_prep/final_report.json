@@ -1,0 +1,12 @@
+{
+ "verts": 529683,
+ "faces": 529441,
+ "non_manifold_edges": 0,
+ "volume_cm3": 167.83,
+ "size_mm": [
+  69.31,
+  68.28,
+  150.0
+ ],
+ "base_z": 0.0
+}

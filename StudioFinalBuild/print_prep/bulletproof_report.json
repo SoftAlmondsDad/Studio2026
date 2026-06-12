@@ -1,0 +1,16 @@
+{
+ "islands_found": 1,
+ "islands_removed_verts": 0,
+ "empty_layer_bands": [],
+ "final_islands": 1,
+ "non_manifold_edges": 0,
+ "zero_area_faces": 0,
+ "volume_cm3": 213.01,
+ "faces": 458460,
+ "size_mm": [
+  80.69,
+  80.69,
+  150.55
+ ],
+ "base_z": 0.0
+}

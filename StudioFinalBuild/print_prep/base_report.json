@@ -1,0 +1,22 @@
+{
+ "stl_size_xyz_mm": [
+  69.31,
+  68.28,
+  150.0
+ ],
+ "stl_min_z": 0.0,
+ "center_of_mass_mm": [
+  4.73,
+  0.25,
+  71.05
+ ],
+ "islands": 1,
+ "non_manifold_edges": 0,
+ "volume_cm3": 190.35,
+ "final_size_mm": [
+  80.0,
+  80.0,
+  150.0
+ ],
+ "base_z": 0.0
+}

@@ -1,0 +1,186 @@
+{
+ "objects": [
+  {
+   "name": "Plane",
+   "type": "MESH",
+   "scale": [
+    1.9198,
+    0.8983,
+    0.8983
+   ],
+   "dimensions": [
+    5.118,
+    10.0831,
+    10.1179
+   ],
+   "verts": 14535,
+   "faces": 13605,
+   "non_manifold_edges": 0
+  },
+  {
+   "name": "Circle",
+   "type": "MESH",
+   "scale": [
+    4.2257,
+    4.2257,
+    4.2257
+   ],
+   "dimensions": [
+    8.626,
+    8.626,
+    0.0
+   ],
+   "verts": 32,
+   "faces": 1,
+   "non_manifold_edges": 32
+  },
+  {
+   "name": "Cube",
+   "type": "MESH",
+   "scale": [
+    -0.1198,
+    -0.666,
+    -0.666
+   ],
+   "dimensions": [
+    8.2246,
+    8.2566,
+    13.7664
+   ],
+   "verts": 223070,
+   "faces": 216620,
+   "non_manifold_edges": 2700
+  },
+  {
+   "name": "Circle.001",
+   "type": "MESH",
+   "scale": [
+    2.9377,
+    2.9377,
+    2.9377
+   ],
+   "dimensions": [
+    5.9966,
+    5.9966,
+    12.5739
+   ],
+   "verts": 64,
+   "faces": 34,
+   "non_manifold_edges": 0
+  },
+  {
+   "name": "Cylinder.001",
+   "type": "MESH",
+   "scale": [
+    0.1378,
+    0.1378,
+    1.168
+   ],
+   "dimensions": [
+    5.7291,
+    5.691,
+    4.2268
+   ],
+   "verts": 6210,
+   "faces": 5591,
+   "non_manifold_edges": 180
+  },
+  {
+   "name": "Circle.002",
+   "type": "MESH",
+   "scale": [
+    2.4619,
+    2.4619,
+    1.0056
+   ],
+   "dimensions": [
+    5.0255,
+    5.0255,
+    4.3042
+   ],
+   "verts": 64,
+   "faces": 34,
+   "non_manifold_edges": 0
+  },
+  {
+   "name": "Cylinder",
+   "type": "MESH",
+   "scale": [
+    0.4039,
+    0.4039,
+    0.1608
+   ],
+   "dimensions": [
+    7.0045,
+    7.0055,
+    1.4298
+   ],
+   "verts": 4800,
+   "faces": 4520,
+   "non_manifold_edges": 0
+  },
+  {
+   "name": "Cylinder.002",
+   "type": "MESH",
+   "scale": [
+    0.2954,
+    0.2954,
+    0.1176
+   ],
+   "dimensions": [
+    5.1231,
+    5.1239,
+    1.0458
+   ],
+   "verts": 4800,
+   "faces": 4520,
+   "non_manifold_edges": 0
+  },
+  {
+   "name": "Plane.001",
+   "type": "MESH",
+   "scale": [
+    22.8501,
+    22.8501,
+    22.8501
+   ],
+   "dimensions": [
+    45.7002,
+    45.7002,
+    0.0
+   ],
+   "verts": 4,
+   "faces": 1,
+   "non_manifold_edges": 4
+  },
+  {
+   "name": "Camera",
+   "type": "CAMERA",
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "dimensions": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  }
+ ],
+ "scene_bbox_min": [
+  -22.8501,
+  -22.8501,
+  -2.3019
+ ],
+ "scene_bbox_max": [
+  22.8501,
+  22.8501,
+  22.0982
+ ],
+ "scene_size": [
+  45.7002,
+  45.7002,
+  24.4002
+ ]
+}

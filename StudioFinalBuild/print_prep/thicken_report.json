@@ -1,0 +1,23 @@
+{
+ "thickness_before": {
+  "samples": 353,
+  "min_mm": 0.01,
+  "median_mm": 0.276
+ },
+ "verts_fattened": 4375,
+ "thickness_after": {
+  "samples": 355,
+  "min_mm": 0.622,
+  "median_mm": 1.016
+ },
+ "islands": 2,
+ "non_manifold_edges": 0,
+ "volume_cm3": 190.05,
+ "faces": 959298,
+ "final_size_mm": [
+  79.99,
+  79.99,
+  150.27
+ ],
+ "base_z": 0.0
+}
