@@ -471,9 +471,24 @@ figure { margin: 0; }
 @media (max-width: 700px) { .footer-inner { flex-direction: column; text-align: center; } }
 
 /* ============ FINAL REFLECTION ============ */
-.reflect-hero { margin-top: 56px; }
-.reflect-hero .vid { border-radius: 8px; }
-.reflect-hero figcaption { margin-top: 10px; }
+#reflection {
+  position: relative; overflow: hidden;
+  border-top: none;
+}
+.reflect-bg {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+}
+.reflect-bg video {
+  width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%;
+  filter: brightness(0.32) contrast(1.06) saturate(0.15);
+}
+.reflect-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom, var(--bg) 0%, rgba(14,14,17,0.08) 16%, rgba(14,14,17,0.08) 84%, var(--bg) 100%),
+    radial-gradient(ellipse 100% 55% at 50% 50%, transparent 5%, rgba(14,14,17,0.68) 100%);
+}
+#reflection > .container { position: relative; z-index: 1; }
 
 .reflect-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 80px);
@@ -929,25 +944,18 @@ html.nochrome .nav, html.nochrome .hud, html.nochrome .hud-readout { display: no
 
 <!-- ============ FINAL REFLECTION ============ -->
 <section class="section" id="reflection">
+  <!-- Background flyover video -->
+  <div class="reflect-bg" aria-hidden="true">
+    <video id="reflectBgVideo" autoplay muted loop playsinline>
+      <source src="assets/video/apartment-flyover.mp4" type="video/mp4">
+    </video>
+  </div>
+
   <div class="container">
     <div class="crumb reveal"><span>GavinKS_StudioFinal.blend</span> <span class="sep">›</span> <span class="here">Final Reflection</span></div>
     <div class="section-head reveal" data-d="1"><h2>What I built.<br>What I learned.</h2></div>
     <div class="section-lead reveal" data-d="2">
       <p>The building that emerged from this project isn't the one I originally planned — and that turned out to be the point.</p>
-    </div>
-
-    <!-- Prominent flyover video -->
-    <div class="reflect-hero reveal" data-d="2">
-      <div class="vid" data-vid>
-        <span class="badge">Final Build — Fly-over Render</span>
-        <video preload="none" poster="assets/img/brick-upgraded-hero.png" controls playsinline muted>
-          <source src="assets/video/apartment-flyover.mp4" type="video/mp4">
-        </video>
-        <button class="playbtn" aria-label="Play the final building fly-over render">
-          <span class="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-      </div>
-      <figcaption class="figcap">exChange site apartment building — Blender fly-over render of the final design</figcaption>
     </div>
 
     <!-- Copy + sticky render gallery -->
@@ -1019,9 +1027,11 @@ html.nochrome .nav, html.nochrome .hud, html.nochrome .hud-readout { display: no
     if (e.target.tagName === 'A') { nav.classList.remove('open'); navToggle.setAttribute('aria-expanded', 'false'); }
   });
 
-  /* hero video: respect reduced motion */
+  /* background videos: respect reduced motion */
   var heroVideo = document.getElementById('heroVideo');
   if (reduceMotion && heroVideo) { heroVideo.removeAttribute('autoplay'); heroVideo.pause(); }
+  var reflectBgVideo = document.getElementById('reflectBgVideo');
+  if (reduceMotion && reflectBgVideo) { reflectBgVideo.removeAttribute('autoplay'); reflectBgVideo.pause(); }
 
   /* reveal on scroll */
   var revealEls = document.querySelectorAll('.reveal');
